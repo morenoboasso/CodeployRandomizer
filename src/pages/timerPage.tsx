@@ -2,38 +2,53 @@ import { useEffect, useState } from "react";
 import { FaBan, FaClock } from "react-icons/fa";
 
 const TimerPage = () => {
-    const [isClicked, setIsClicked] = useState<boolean>(false);
-    const [minutes, setMinutes] = useState<number>(15); //primo timer minutes
-    const [seconds, setSeconds] = useState<number>(0); //primo timer second
-    const [usMinutes, setUsMinutes] = useState<number>(0); //secondo timer 
-    let timeoutId: any = null;
+  const [globalTimer, setGlobalTimer] = useState(900); // 15 minuti in secondi
+  const [localTimer, setLocalTimer] = useState(120);   // 2 minuti in secondi
+  const [globalDisplay, setGlobalDisplay] = useState("15:00");
+  const [localDisplay, setLocalDisplay] = useState("02:00");
 
-    useEffect(()=> {
-        if(isClicked){
-            timeoutId = setTimeout(()=>{
-                if(seconds === 0) {
-                    if(minutes === 0) {
-                        setIsClicked(false);
-                    } else {
-                        setMinutes(minutes - 1);
-                        setSeconds(59);
-                    }
-                }else {
-                    setSeconds(seconds - 1);
-                }
-            }, 1000);
+  const formatTime = (timeInSeconds) => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = timeInSeconds % 60;
+    return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+  };
+
+  useEffect(() => {
+    setGlobalDisplay(formatTime(globalTimer));
+    setLocalDisplay(formatTime(localTimer));
+  }, [globalTimer, localTimer]);
+
+  const startGlobalTimer = () => {
+    console.log("Global timer started");
+    const globalInterval = setInterval(() => {
+      setGlobalTimer(prevTimer => {
+        if (prevTimer <= 0) {
+          clearInterval(globalInterval);
+          clearInterval(localInterval);
+          console.log("Global timer finished");
+          return 0;
         }
-        return () => {
-            clearTimeout(timeoutId);
-          };
-    }, [isClicked, minutes, seconds]);
-    
+        return prevTimer - 1;
+      });
+    }, 1000);
 
-  
+    const localInterval = setInterval(() => {
+      setLocalTimer(prevTimer => {
+        if (prevTimer <= 1) {
+          console.log("Local timer finished, restarting...");
+          return 120; // Riavvia il timer locale a 02:00
+        }
+        console.log("Local timer tick");
+        return prevTimer - 1;
+      });
+    }, 1000);
 
-    const handleTimers = () => {
-        setIsClicked(true);
-    };
+    setTimeout(() => {
+      clearInterval(globalInterval);
+      clearInterval(localInterval);
+      console.log("Global timer finished");
+    }, globalTimer * 1000);
+  };
 
   return (
     <>
