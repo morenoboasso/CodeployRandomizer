@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { FaBan, FaClock } from "react-icons/fa";
 
 const TimerPage = () => {
-  const [globalTimer, setGlobalTimer] = useState(900); // 15 minuti in secondi
-  const [localTimer, setLocalTimer] = useState(120);   // 2 minuti in secondi
+  const [globalTimer, setGlobalTimer]     = useState(900);
+  const [localTimer, setLocalTimer]       = useState(120);
   const [globalDisplay, setGlobalDisplay] = useState("15:00");
-  const [localDisplay, setLocalDisplay] = useState("02:00");
+  const [localDisplay, setLocalDisplay]   = useState("02:00");
+  const [codeployers, setCodeployers]     = useState([]);
+  const [currentCodeployer, setCurrentCodeployer] = useState({ name: "", photoUrl: "" });
 
   const formatTime = (timeInSeconds) => {
     const minutes = Math.floor(timeInSeconds / 60);
@@ -17,6 +19,30 @@ const TimerPage = () => {
     setGlobalDisplay(formatTime(globalTimer));
     setLocalDisplay(formatTime(localTimer));
   }, [globalTimer, localTimer]);
+
+  useEffect(() => {
+    try {
+      fetch('codeployers.json')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Data received:', data);
+          setCodeployers(data);
+          // All'inizio, imposta un codeployer casuale
+          setCurrentCodeployer(data[Math.floor(Math.random() * data.length)]);
+          console.log(currentCodeployer)
+        })
+        .catch(error => {
+          console.error('Error fetching codeployers:', error);
+        });
+    } catch (error) {
+      console.error('Error fetching codeployers:', error);
+    }
+  }, []);
 
   const startGlobalTimer = () => {
     console.log("Global timer started");
@@ -35,10 +61,10 @@ const TimerPage = () => {
     const localInterval = setInterval(() => {
       setLocalTimer(prevTimer => {
         if (prevTimer <= 1) {
-          console.log("Local timer finished, restarting...");
-          return 120; // Riavvia il timer locale a 02:00
+          // Se il timer locale è scaduto, imposta un nuovo codeployer casuale
+          setCurrentCodeployer(codeployers[Math.floor(Math.random() * codeployers.length)]);
+          return 120;
         }
-        console.log("Local timer tick");
         return prevTimer - 1;
       });
     }, 1000);
@@ -46,7 +72,6 @@ const TimerPage = () => {
     setTimeout(() => {
       clearInterval(globalInterval);
       clearInterval(localInterval);
-      console.log("Global timer finished");
     }, globalTimer * 1000);
   };
 
@@ -68,7 +93,7 @@ const TimerPage = () => {
             </div>
             {/* Time Riunione Container*/}
             <div className="border-2 border-green-custom rounded-md p-5 h-fit"> 
-                <p className="flex flex-row items-center font-bold text-lg gap-3"><FaClock className="text-green-custom"/>{minutes}:{seconds < 10 ? `0${seconds}` : seconds}</p>
+                <p className="flex flex-row items-center font-bold text-lg gap-3"><FaClock className="text-green-custom"/>{globalDisplay}</p>
             </div>
         </div>
 
@@ -76,20 +101,22 @@ const TimerPage = () => {
         <div className=" flex flex-col justify-center items-center ">
             {/* foto user */}
             <div className="">
-                <p> foto che sono solo</p>
+              <img src={currentCodeployer.photoUrl} className="w-20 h-20 object-fill rounded-full" alt="codeployer" />
             </div>
              {/* info speack user */}
              <div className="">
-              <p> foto che sono solo</p>
+              <p>
+                {currentCodeployer.name}
+              </p>
              </div>
              {/* Timer user */}
              <div className="">
-             <p> foto che sono solo</p>
+             <p>{localDisplay}</p>
              </div>
              {/* Button finish user */}
              <div className="">
              <button 
-              className={`border-2 p-3 rounded-lg focus:outline-none font-bold text-lg gap-3 ${isClicked ? 'border-red-600 focus:border-red-600 text-red-600' : 'border-blue-night-custom focus:border-blue-night-custom text-blue-night-custom'}`} 
+              className={`border-2 p-3 rounded-lg focus:outline-none font-bold text-lg gap-3 `}
               onClick={startGlobalTimer}
              >
                  <p className="flex flex-row items-center font-bold text-lg gap-3"><FaBan/> Cliccami che sono solo</p>
