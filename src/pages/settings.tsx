@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { FaCog, FaHome, FaClock } from "react-icons/fa";
+import { FaHome, FaClock } from "react-icons/fa";
 
 const Settings = () => {
   return (

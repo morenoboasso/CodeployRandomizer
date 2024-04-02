@@ -2,13 +2,10 @@
 import { Link } from "react-router-dom";
 /* React */
 import { useEffect, useState } from "react";
+/* API */
+import { Codeployer, fetchCodeployers } from "../api/codeployers";
 /* Icons */
 import { FaBan, FaClock, FaCog, FaHome } from "react-icons/fa";
-
-interface Codeployer {
-  name: string;
-  photoUrl: string;
-}
 
 const TimerPage = () => {
   /* Timer */
@@ -38,25 +35,16 @@ const TimerPage = () => {
   /* API CodePloyers */
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await fetch("codeployers.json");
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-        console.log("Data received:", data);
-        const shuffledCodeployers = shuffleArray(data);
-        setCodeployers(shuffledCodeployers);
-        setCurrentCodeployerIndex(0);
-      } catch (error) {
-        console.error("Error fetching codeployers:", error);
-      }
+      const data = await fetchCodeployers();
+      const shuffledCodeployers = shuffleArray(data);
+      setCodeployers(shuffledCodeployers);
+      setCurrentCodeployerIndex(0);
     };
     fetchData();
   }, []);
 
   /* Estrazione casuale TUTTI codeployers senza ripetizioni */
-  const shuffleArray = (array: []) => {
+  const shuffleArray = (array: any[]) => {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [array[i], array[j]] = [array[j], array[i]];
@@ -70,9 +58,7 @@ const TimerPage = () => {
       startGlobalTimer();
       setTimerStarted(true);
     } else {
-      setCurrentCodeployerIndex(
-        (prevIndex) => (prevIndex + 1) % codeployers.length
-      );
+      changeSpeaker(); // Chiamata alla funzione per cambiare lo speaker
       setLocalTimer(120);
     }
   };
@@ -94,9 +80,10 @@ const TimerPage = () => {
     const localInterval = setInterval(() => {
       setLocalTimer((prevTimer) => {
         if (prevTimer <= 1) {
-          setCurrentCodeployerIndex(
-            (prevIndex) => (prevIndex + 1) % codeployers.length
-          );
+          // Controllo se il timer globale è già a zero
+          if (globalTimer > 0) {
+            changeSpeaker(); // Chiamata alla funzione per cambiare lo speaker solo se il timer globale non è ancora a zero
+          }
           return 120;
         }
         return prevTimer - 1;
@@ -114,6 +101,11 @@ const TimerPage = () => {
     const nextIndex = (currentCodeployerIndex + 1) % codeployers.length;
     return codeployers[nextIndex];
   };
+
+  const changeSpeaker = () => {
+    setCurrentCodeployerIndex((prevIndex) => (prevIndex + 1) % codeployers.length);
+  };
+  
 
   return (
     <>
