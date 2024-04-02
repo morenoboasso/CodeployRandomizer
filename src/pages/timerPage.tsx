@@ -1,5 +1,9 @@
+/* Routing */
+import { Link } from "react-router-dom";
+/* React */
 import { useEffect, useState } from "react";
-import { FaBan, FaClock } from "react-icons/fa";
+/* Icons */
+import { FaBan, FaClock, FaCog, FaHome } from "react-icons/fa";
 
 interface Codeployer {
   name: string;
@@ -113,6 +117,15 @@ const TimerPage = () => {
 
   return (
     <>
+      {/* Navbar */}
+      <div className="flex justify-between items-center p-4 w-full bg-green-custom">
+        <Link to="/home">
+          <FaHome className="text-white cursor-pointer text-3xl" />
+        </Link>
+        <Link to="/settings">
+          <FaCog className="text-white cursor-pointer text-3xl" />
+        </Link>
+      </div>
       {/*Second Container*/}
       <div className="w-screen h-screen p-5 flex flex-col">
         {/* Card User Container*/}
