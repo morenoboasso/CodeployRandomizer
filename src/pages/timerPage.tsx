@@ -90,7 +90,7 @@ const TimerPage = () => {
              <div className="">
              <button 
               className={`border-2 p-3 rounded-lg focus:outline-none font-bold text-lg gap-3 ${isClicked ? 'border-red-600 focus:border-red-600 text-red-600' : 'border-blue-night-custom focus:border-blue-night-custom text-blue-night-custom'}`} 
-              onClick={handleTimers}
+              onClick={startGlobalTimer}
              >
                  <p className="flex flex-row items-center font-bold text-lg gap-3"><FaBan/> Cliccami che sono solo</p>
             </button>
