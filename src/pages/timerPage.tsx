@@ -5,10 +5,12 @@ import { useEffect, useState } from "react";
 /* API */
 import { Codeployer, fetchCodeployers } from "../api/codeployers";
 /* Icons */
-import { FaBan, FaClock, FaCog, FaHome } from "react-icons/fa";
+import {FaClock, FaCog, FaHome, FaPlay } from "react-icons/fa";
 /* Lottie */
 import Lottie from 'react-lottie';
 import animationData from '../lottie/audio-bubble.json';
+import clsx from "clsx";
+import { FaArrowsRotate } from "react-icons/fa6";
 
 
 const TimerPage = () => {
@@ -163,32 +165,30 @@ const TimerPage = () => {
         </div>
         {/* User Container */}
         <div className=" flex flex-col justify-center items-center gap-6">
-          <div className="flex flex-col items-center justify-items-center">
-            <div className="rounded-full w-80 h-80 border-2 bg-white flex justify-center">
-              <Lottie
-                options={defaultOptions}
-                height={500}  
-                width={500}   
-                style={{ position: 'relative'}}
-              />
+          <div className="flex flex-row items-center justify-center">
+            <div className="rounded-full w-80 h-80 bg-white flex items-center">
               <img
                 src={codeployers[currentCodeployerIndex]?.photoUrl}
-                className="w-full h-full object-cover rounded-full"
+                className="w-full h-full object-contain rounded-full"
                 alt="codeployer"
               />
+              <div className="">
+                <Lottie
+                  options={defaultOptions}
+                  height={450}
+                  width={450}
+                  style={{
+                    position: 'absolute',
+                    borderRadius: 360,
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -80%)',
+                    zIndex: -2,
+                  }}
+                />
+              </div>
             </div>
           </div>
-          {/* foto user 
-          <div className="rounded-full">
-            <div className="relative w-40 h-40">
- <Lottie
-                options={defaultOptions}
-                height={220}
-                width={220}
-                style={{ position: 'absolute', top: 0, left: 0, zIndex: -1 }}
-              />
-            </div>
-          </div>*/}
           {/* info speack user */}
           <div className="flex flex-col justify-center items-center gap-2 ">
             <p className="font-bold text-sm text-black-custom"> Now Speaking:</p>
@@ -202,14 +202,18 @@ const TimerPage = () => {
           <div className="">
             <button
               className={
-                `border-2 p-3 rounded-lg focus:outline-none font-bold text-lg gap-3 ,
-                 
-                `
-              }
+                clsx(
+                  'border-2',
+                  'p-3',
+                  'rounded-lg',
+                  timerStarted ?
+                   'border-red-600 hover:bg-red-600 text-red-600 hover:text-white' :
+                   'border-blue-night-custom hover:bg-blue-night-custom text-blue-night-custom hover:text-white',
+                )}
               onClick={handleTimerButtonClick}
             >
               <p className="flex flex-row items-center font-bold text-lg gap-3">
-                <FaBan />
+                {timerStarted ? <FaArrowsRotate /> :  <FaPlay/> }
                 {timerStarted ? "Passa la parola" : "Inizia ora la riunione!"}
               </p>
             </button>

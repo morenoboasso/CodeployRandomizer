@@ -12,8 +12,8 @@ const Home = () => {
               Inizia la riunione
             </p>
             <Link to="/timer">
-              <button className="border-2 px-7 py-2 rounded-2xl border-blue-night-custom cursor-pointer hover:bg-blue-night-custom">
-                <p className="flex flex-row items-center gap-4 text-blue-night-custom font-bold hover:text-white-custom">
+              <button className="border-2 px-7 py-2 rounded-2xl border-blue-night-custom cursor-pointer hover:bg-blue-night-custom  text-blue-night-custom hover:text-white font-bold">
+                <p className="flex flex-row items-center gap-4 font-bold" >
                   Clicca per iniziare
                   <FaBullhorn />
                 </p>
