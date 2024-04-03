@@ -6,6 +6,10 @@ import { useEffect, useState } from "react";
 import { Codeployer, fetchCodeployers } from "../api/codeployers";
 /* Icons */
 import { FaBan, FaClock, FaCog, FaHome } from "react-icons/fa";
+/* Lottie */
+import Lottie from 'react-lottie';
+import animationData from '../lottie/audio-bubble.json';
+
 
 const TimerPage = () => {
   /* Timer */
@@ -19,7 +23,7 @@ const TimerPage = () => {
   const [currentCodeployerIndex, setCurrentCodeployerIndex] = useState(0);
 
   /* Formattazione timer */
-  const formatTime = (timeInSeconds) => {
+  const formatTime = (timeInSeconds: number) => {
     const minutes = Math.floor(timeInSeconds / 60);
     const seconds = timeInSeconds % 60;
     return `${minutes.toString().padStart(2, "0")}:${seconds
@@ -30,7 +34,13 @@ const TimerPage = () => {
   useEffect(() => {
     setGlobalDisplay(formatTime(globalTimer));
     setLocalDisplay(formatTime(localTimer));
+    if (localTimer <= 1) {
+      if (globalTimer > 0) {
+        changeSpeaker(); // Chiamata alla funzione per cambiare lo speaker solo se il timer globale non è ancora a zero
+      }
+    }
   }, [globalTimer, localTimer]);
+
 
   /* API CodePloyers */
   useEffect(() => {
@@ -81,9 +91,6 @@ const TimerPage = () => {
       setLocalTimer((prevTimer) => {
         if (prevTimer <= 1) {
           // Controllo se il timer globale è già a zero
-          if (globalTimer > 0) {
-            changeSpeaker(); // Chiamata alla funzione per cambiare lo speaker solo se il timer globale non è ancora a zero
-          }
           return 120;
         }
         return prevTimer - 1;
@@ -98,14 +105,25 @@ const TimerPage = () => {
 
   /* Card con speaker successivo */
   const getNextCodeployer = () => {
-    const nextIndex = (currentCodeployerIndex + 1) % codeployers.length;
+    const nextIndex = (currentCodeployerIndex + 1); //resto di una divisione
     return codeployers[nextIndex];
   };
 
   const changeSpeaker = () => {
-    setCurrentCodeployerIndex((prevIndex) => (prevIndex + 1) % codeployers.length);
+    setCurrentCodeployerIndex((prevIndex) => (prevIndex + 1));
   };
-  
+
+  useEffect(() => {
+  }, [localTimer, globalTimer]);
+
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: animationData,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice"
+    }
+  };
 
   return (
     <>
@@ -129,7 +147,7 @@ const TimerPage = () => {
               <div className="w-16 h-16">
                 <img
                   src={getNextCodeployer()?.photoUrl}
-                  className="w-full h-full object-fill rounded-full"
+                  className="w-full h-full object-cover rounded-full"
                 />
               </div>
               <p className="font-semibold text-white-custom">{getNextCodeployer()?.name}</p>
@@ -143,29 +161,51 @@ const TimerPage = () => {
             </p>
           </div>
         </div>
-
         {/* User Container */}
-        <div className=" flex flex-col justify-center items-center ">
-          {/* foto user */}
-          <div className="">
-            <img
-              src={codeployers[currentCodeployerIndex]?.photoUrl}
-              className="w-20 h-20 object-fill rounded-full"
-              alt="codeployer"
-            />
+        <div className=" flex flex-col justify-center items-center gap-6">
+          <div className="flex flex-col items-center justify-items-center">
+            <div className="rounded-full w-80 h-80 border-2 bg-white flex justify-center">
+              <Lottie
+                options={defaultOptions}
+                height={500}  
+                width={500}   
+                style={{ position: 'relative'}}
+              />
+              <img
+                src={codeployers[currentCodeployerIndex]?.photoUrl}
+                className="w-full h-full object-cover rounded-full"
+                alt="codeployer"
+              />
+            </div>
           </div>
+          {/* foto user 
+          <div className="rounded-full">
+            <div className="relative w-40 h-40">
+ <Lottie
+                options={defaultOptions}
+                height={220}
+                width={220}
+                style={{ position: 'absolute', top: 0, left: 0, zIndex: -1 }}
+              />
+            </div>
+          </div>*/}
           {/* info speack user */}
-          <div className="">
-            <p>{codeployers[currentCodeployerIndex]?.name}</p>
+          <div className="flex flex-col justify-center items-center gap-2 ">
+            <p className="font-bold text-sm text-black-custom"> Now Speaking:</p>
+            <p className="font-bold text-3xl text-black-custom">{codeployers[currentCodeployerIndex]?.name}</p>
           </div>
           {/* Timer user */}
-          <div className="">
-            <p>{localDisplay}</p>
+          <div className="border-2 border-green-custom rounded-md p-3 h-fit ">
+            <p className="font-bold text-lg text-black-custom"> 00:{localDisplay}</p>
           </div>
           {/* Button finish user */}
           <div className="">
             <button
-              className={`border-2 p-3 rounded-lg focus:outline-none font-bold text-lg gap-3 `}
+              className={
+                `border-2 p-3 rounded-lg focus:outline-none font-bold text-lg gap-3 ,
+                 
+                `
+              }
               onClick={handleTimerButtonClick}
             >
               <p className="flex flex-row items-center font-bold text-lg gap-3">
